@@ -1,3 +1,6 @@
+<?php include 'view/auth-middleware.php'; ?>
+<?php include 'view/header.php'; ?>
+
 <?php $page_name = "categories"; ?>
 <?php include "view/header.php"; ?>
 

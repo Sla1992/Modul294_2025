@@ -1,3 +1,7 @@
+<?php include 'view/auth-middleware.php'; ?>
+<?php include 'view/header.php'; ?>
+
+
 <?php $page_name = "index"; ?>
 <?php include "view/header.php"; ?>
 

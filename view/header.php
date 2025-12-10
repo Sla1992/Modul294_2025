@@ -29,6 +29,9 @@
                 <li>
                     <a href="Login.php" <?php echo $page_name == "login" ? 'class="selected"' : ""; ?>>Login</a>
                 </li>
+                <li>
+                    <a href="logout.php">Log Out</a>
+                </li>
                 <!-- <li>
                 <a href="edit.php"<?php echo $page_name == "edit" ? 'class="selected"' : ""; ?>>Edit</a>
             </li>
