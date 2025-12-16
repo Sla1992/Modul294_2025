@@ -36,7 +36,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             sessionStorage.setItem("jwt", data.token);
-            window.location.href = "index.php";
+            window.location.href = "?page=index";
+            alert("Erfolgreich eingeloggt!");
 
         } catch (error) {
             console.error("Netzwerkfehler:", error);

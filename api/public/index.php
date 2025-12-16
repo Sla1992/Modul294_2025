@@ -165,9 +165,11 @@ $app->get('/products', function (Request $req, Response $res) use ($controllerFa
     // Get the TaskController instance
     $controller = $controllerFactory();
     // List all products
-    $controller->listProducts();
+    $data = $controller->listProducts();
+    // Return JSON response
+    $res->getBody()->write(json_encode($data));
     // Return the response
-    return $res;
+    return $res->withHeader('Content-Type', 'application/json');
 })->add($jwtMiddleware);
 
 /**
@@ -193,9 +195,17 @@ $app->get('/products/{id}', function (Request $req, Response $res, $args) use ($
     // Get the TaskController instance
     $controller = $controllerFactory();
     // Get the product by ID
-    $controller->getProduct((int) $args['id']);
+    $data = $controller->getProduct((int) $args['id']);
+    if ($data === null) {
+        // If the product is not found, return a 404 error
+        $res = $res->withStatus(404);
+        $res->getBody()->write(json_encode(['error' => 'Product not found']));
+    } else {
+        // Output the product data in JSON format
+        $res->getBody()->write(json_encode($data));
+    }
     // Return the response
-    return $res;
+    return $res->withHeader('Content-Type', 'application/json');
 })->add($jwtMiddleware);
 
 /**
@@ -231,9 +241,10 @@ $app->post('/products', function (Request $req, Response $res) use ($controllerF
     // Parse the request body to get product data
     $data = (array) $req->getParsedBody();
     // Create the new product
-    $controller->createProduct($data);
+    $result = $controller->createProduct($data);
     // Return the response
-    return $res;
+    $res->getBody()->write(json_encode($result));
+    return $res->withHeader('Content-Type', 'application/json');
 })->add($jwtMiddleware);
 
 /**
@@ -279,9 +290,10 @@ $app->patch('/products/{id}', function (Request $req, Response $res, $args) use 
     // Parse the request body to get product data
     $data = (array) $req->getParsedBody();
     // Update the product
-    $controller->updateProduct((int) $args['id'], $data);
+    $result = $controller->updateProduct((int) $args['id'], $data);
     // Return the response
-    return $res;
+    $res->getBody()->write(json_encode($result));
+    return $res->withHeader('Content-Type', 'application/json');
 })->add($jwtMiddleware);
 
 /**
@@ -308,9 +320,10 @@ $app->delete('/products/{id}', function (Request $req, Response $res, $args) use
     // Get the TaskController instance
     $controller = $controllerFactory();
     // Delete the product
-    $controller->deleteProduct((int) $args['id']);
+    $result = $controller->deleteProduct((int) $args['id']);
     // Return the response
-    return $res;
+    $res->getBody()->write(json_encode($result));
+    return $res->withHeader('Content-Type', 'application/json');
 })->add($jwtMiddleware);
 
 /**
@@ -327,9 +340,10 @@ $app->get('/categories', function (Request $req, Response $res) use ($controller
     // Get the TaskController instance
     $controller = $controllerFactory();
     // List all categories
-    $controller->listCategories();
+    $data = $controller->listCategories();
     // Return the response
-    return $res;
+    $res->getBody()->write(json_encode($data));
+    return $res->withHeader('Content-Type', 'application/json');
 })->add($jwtMiddleware);
 
 /**
@@ -355,9 +369,18 @@ $app->get('/categories/{id}', function (Request $req, Response $res, $args) use 
     // Get the TaskController instance
     $controller = $controllerFactory();
     // Get the category by ID
-    $controller->getCategory((int) $args['id']);
-    // Return the response
-    return $res;
+    $data = $controller->getCategory((int) $args['id']);
+    if ($data === null) {
+        //If the category is not found, return a 404 error
+        $res = $res->withStatus(404);
+        //Return an error message in JSON format
+        $res->getBody()->write(json_encode(['error' => 'Category not found']));
+    } else {
+        //Output the category data in JSON format
+        $res->getBody()->write(json_encode($data));
+    }
+    //Return the response
+    return $res->withHeader('Content-Type', 'application/json');
 })->add($jwtMiddleware);
 
 /**
@@ -388,9 +411,10 @@ $app->post('/categories', function (Request $req, Response $res) use ($controlle
     // Parse the request body to get category data
     $data = (array) $req->getParsedBody();
     // Create the new category
-    $controller->createCategory($data);
+    $result = $controller->createCategory($data);
     // Return the response
-    return $res;
+    $res->getBody()->write(json_encode($result));
+    return $res->withHeader('Content-Type', 'application/json');
 })->add($jwtMiddleware);
 
 /**
@@ -431,9 +455,10 @@ $app->patch('/categories/{id}', function (Request $req, Response $res, $args) us
     // Parse the request body to get category data
     $data = (array) $req->getParsedBody();
     // Update the category
-    $controller->updateCategory((int) $args['id'], $data);
+    $result = $controller->updateCategory((int) $args['id'], $data);
     // Return the response
-    return $res;
+    $res->getBody()->write(json_encode($result));
+    return $res->withHeader('Content-Type', 'application/json');
 })->add($jwtMiddleware);
 
 /**
@@ -460,9 +485,10 @@ $app->delete('/categories/{id}', function (Request $req, Response $res, $args) u
     // Get the TaskController instance
     $controller = $controllerFactory();
     // Delete the category
-    $controller->deleteCategory((int) $args['id']);
+    $result = $controller->deleteCategory((int) $args['id']);
     // Return the response
-    return $res;
+    $res->getBody()->write(json_encode($result));
+    return $res->withHeader('Content-Type', 'application/json');
 })->add($jwtMiddleware);
 
 

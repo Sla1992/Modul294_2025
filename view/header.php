@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit</title>
 
-    <link rel="stylesheet" href="view/stylesheets/style.css">
+    <link rel="stylesheet" href="/view/stylesheets/style.css">
 </head>
 
 <body>
@@ -15,22 +15,20 @@
             <img src="https://www.migration.sid.be.ch/content/dam/global/bilder/logo-be.svg" style="height: 3em;">
             <ul>
                 <li>
-                    <a href="index.php" <?php echo $page_name == "index" ? 'class="selected"' : ""; ?>>
-
-                        Home
-                    </a>
+                    <a href="/?page=index" class="<?= $page_name === 'index' ? 'selected' : '' ?>">Home</a>
                 </li>
                 <li>
-                    <a href="Products.php" <?php echo $page_name == "products" ? 'class="selected"' : ""; ?>>Products</a>
+                    <a href="/?page=products" <?php echo $page_name == "products" ? 'class="selected"' : ""; ?>>Products</a>
                 </li>
                 <li>
-                    <a href="Categories.php" <?php echo $page_name == "categories" ? 'class="selected"' : ""; ?>>Categories</a>
+                    <a href="/?page=categories" <?php echo $page_name == "categories" ? 'class="selected"' : ""; ?>>Categories</a>
                 </li>
                 <li>
-                    <a href="Login.php" <?php echo $page_name == "login" ? 'class="selected"' : ""; ?>>Login</a>
+                    <a href="/?page=login" <?php echo $page_name == "login" ? 'class="selected"' : ""; ?>>Login</a>
                 </li>
                 <li>
-                    <a href="logout.php">Log Out</a>
+                    <a href="/?page=logout" <?php echo $page_name == "logout" ? 'class="selected"' : ""; ?>>Log
+                        Out</a>
                 </li>
                 <!-- <li>
                 <a href="edit.php"<?php echo $page_name == "edit" ? 'class="selected"' : ""; ?>>Edit</a>

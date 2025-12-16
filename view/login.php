@@ -1,6 +1,6 @@
 <?php $page_name = "login"; ?>
 
-<?php include "view/header.php"; ?>
+<?php require_once __DIR__ . "/header.php"; ?>
 
 <?php
 if (session_status() === PHP_SESSION_NONE) {
@@ -16,7 +16,7 @@ endif;
 ?>
 
 
-<script src="controller/login-controller.js"></script>
+<script src="/controller/login-controller.js"></script>
 
 
 <div class="login-container">
@@ -33,4 +33,4 @@ endif;
     </form>
 </div>
 
-<?php include "view/footer.php"; ?>
+<?php require_once __DIR__ . "/footer.php"; ?>

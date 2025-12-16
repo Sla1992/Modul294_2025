@@ -1,11 +1,22 @@
-<?php include 'view/auth-middleware.php'; ?>
-<?php include 'view/header.php'; ?>
+<?php
+$page = $_GET['page'] ?? 'index';
 
+$routes = [
+    'index' => 'index',
+    'products' => 'products',
+    'categories' => 'categories',
+    'login' => 'login',
+    'logout' => 'logout',
+];
 
-<?php $page_name = "index"; ?>
-<?php include "view/header.php"; ?>
+if (!isset($routes[$page])) {
+    http_response_code(404);
+    echo "404 – Seite nicht gefunden";
+    exit;
+}
 
-<script src="controller/index-controller.js"></script>
+// 🔑 HIER setzen wir page_name zentral
+$page_name = $routes[$page];
 
-
-<?php include "view/footer.php"; ?>
+// View laden
+require __DIR__ . "/view/{$page_name}.php";
