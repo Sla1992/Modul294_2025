@@ -10,7 +10,7 @@ require_once __DIR__ . "/header.php"; ?>
             <th>Category ID</th>
             <th>Active</th>
             <th>Name</th>
-
+            <th>Actions</th>
         </tr>
     </thead>
 
@@ -31,6 +31,7 @@ require_once __DIR__ . "/header.php"; ?>
 
 </table>
 
+<script src="/controller/auth-guard.js"></script>
 <script src="/controller/categories-controller.js"></script>
 
 <?php require_once __DIR__ . "/footer.php"; ?>

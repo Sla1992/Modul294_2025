@@ -1,105 +1,191 @@
+let validCategoryIds = [];
+
 document.addEventListener("DOMContentLoaded", async () => {
-    const token = sessionStorage.getItem("jwt");
-
-    if (!token) {
-        window.location.href = "?page=login";
-        return;
-    }
-
     try {
-        const response = await fetch("http://localhost/api/public/products", {
-            method: "GET",
-            headers: {
-                "Authorization": "Bearer " + token,
-                "Content-Type": "application/json"
-            }
-        });
+        // Kategorien laden (für Validation)
+        const categories = await authFetch("http://localhost/api/public/categories");
+        validCategoryIds = categories.map(c => Number(c.category_id));
 
-        if (!response.ok) {
-            console.error("API Fehler:", response.status);
+        // Produkte laden
+        const products = await authFetch("http://localhost/api/public/products");
 
-            if (response.status === 401) {
-                alert("Session abgelaufen. Bitte neu einloggen.");
-                sessionStorage.removeItem("jwt");
-                window.location.href = "?page=login";
-            }
-            return;
-        }
+        // 🔗 URL-Filter lesen
+        const filters = getFiltersFromUrl();
 
-        const products = await response.json();
-        console.log("Produkte:", products);
+        const filteredProducts = applyFilters(products, filters);
 
-        renderProducts(products);
+        renderProducts(filteredProducts);
+        bindAddProduct();
 
     } catch (error) {
-        console.error("Netzwerkfehler:", error);
-        alert("API ist nicht erreichbar.");
+        console.error(error.message);
+        showToast("Produkte konnten nicht geladen werden", "error");
     }
 });
 
+/* =====================================================
+   FILTERING (PERMALINKS)
+===================================================== */
 
-function renderProducts(products) {
-    const tableBody = document.querySelector("#products-table-body");
+function getFiltersFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const filters = {};
 
-    if (!tableBody) {
-        console.error("Element #products-table-body nicht gefunden");
-        return;
+    for (const [key, value] of params.entries()) {
+        if (key === "page") continue;
+        filters[key] = value;
     }
 
-    tableBody.innerHTML = "";
+    return filters;
+}
 
-    products.forEach(product => {
-        const row = document.createElement("tr");
+function applyFilters(products, filters) {
+    if (Object.keys(filters).length === 0) return products;
 
-        const idTd = document.createElement("td");
-        idTd.textContent = product.product_id;
+    return products.filter(product => {
+        return Object.entries(filters).every(([key, value]) => {
+            if (!(key in product)) return false;
 
-        const skuTd = document.createElement("td");
-        skuTd.textContent = product.sku ?? "";
+            // Zahlen vergleichen
+            if (!isNaN(product[key]) && !isNaN(value)) {
+                return Number(product[key]) === Number(value);
+            }
 
-        const nameTd = document.createElement("td");
-        nameTd.textContent = product.name ?? "";
-
-        const categoryIdTd = document.createElement("td");
-        categoryIdTd.textContent = product.id_category ?? "";
-
-        const activeTd = document.createElement("td");
-        activeTd.textContent = product.active ?? "";
-
-        const priceTd = document.createElement("td");
-        const priceNum = Number(product.price);
-        priceTd.textContent = Number.isFinite(priceNum) ? `CHF ${priceNum.toFixed(2)}` : "";
-
-        const stockTd = document.createElement("td");
-        stockTd.textContent = product.stock ?? "";
-
-        const actionsTd = document.createElement("td");
-
-        const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "Delete";
-        deleteBtn.classList.add("delete-btn");
-        deleteBtn.dataset.id = product.product_id;
-
-        const editBtn = document.createElement("button");
-        editBtn.textContent = "Edit";
-        editBtn.classList.add("edit-btn");
-        editBtn.dataset.id = product.product_id;
-
-        actionsTd.append(deleteBtn, editBtn);
-
-        row.append(
-            idTd,
-            skuTd,
-            nameTd,
-            categoryIdTd,
-            activeTd,
-            priceTd,
-            stockTd,
-            actionsTd
-        );
-
-        tableBody.appendChild(row);
+            // Strings vergleichen (case-insensitive)
+            return String(product[key]).toLowerCase() === String(value).toLowerCase();
+        });
     });
 }
 
+/* =====================================================
+   RENDER
+===================================================== */
 
+function renderProducts(products) {
+    const tableBody = document.querySelector("#products-table-body");
+    if (!tableBody) return;
+
+    tableBody.innerHTML = "";
+
+    if (products.length === 0) {
+        showToast("Keine Produkte gefunden", "info");
+        return;
+    }
+
+    products.forEach(product => {
+        tableBody.appendChild(createProductRow(product));
+    });
+}
+
+function createProductRow(product) {
+    const row = document.createElement("tr");
+    row.dataset.id = product.product_id;
+
+    row.append(
+        td(product.product_id),
+        td(product.sku),
+        td(product.name),
+        td(product.id_category),
+        td(product.active),
+        td(`CHF ${Number(product.price).toFixed(2)}`),
+        td(product.stock),
+        actionsTd(product, row)
+    );
+
+    return row;
+}
+
+/* =====================================================
+   ACTIONS
+===================================================== */
+
+function actionsTd(product, row) {
+    const td = document.createElement("td");
+
+    const del = document.createElement("button");
+    del.textContent = "Delete";
+    del.onclick = () => deleteProduct(product.product_id, row);
+
+    const edit = document.createElement("button");
+    edit.textContent = "Edit";
+    edit.onclick = () => editProduct(product, row);
+
+    td.append(del, edit);
+    return td;
+}
+
+/* =====================================================
+   DELETE
+===================================================== */
+
+async function deleteProduct(id, row) {
+    if (!confirm("Produkt wirklich löschen?")) return;
+
+    row.remove(); // Optimistic UI
+
+    try {
+        await authFetch(`http://localhost/api/public/products/${id}`, {
+            method: "DELETE"
+        });
+        showToast("Produkt gelöscht", "success");
+    } catch {
+        showToast("Löschen fehlgeschlagen", "error");
+    }
+}
+
+/* =====================================================
+   ADD / EDIT (unverändert)
+===================================================== */
+
+function bindAddProduct() {
+    const btn = document.querySelector(".add-product-btn");
+    if (!btn) return;
+
+    btn.onclick = async () => {
+        const product = {
+            sku: value("new-sku"),
+            name: value("new-name"),
+            id_category: value("new-category-id"),
+            active: value("new-active"),
+            price: value("new-price"),
+            stock: value("new-stock")
+        };
+
+        const errors = validateProduct(product, validCategoryIds);
+        if (errors.length) {
+            errors.forEach(err => showToast(err, "error"));
+            return;
+        }
+
+        const tempRow = createProductRow({ ...product, product_id: "…" });
+        document.querySelector("#products-table-body").prepend(tempRow);
+
+        try {
+            const res = await authFetch("http://localhost/api/public/products", {
+                method: "POST",
+                body: JSON.stringify(product)
+            });
+
+            tempRow.children[0].textContent = res.insertId;
+            showToast("Produkt erstellt", "success");
+
+        } catch {
+            tempRow.remove();
+            showToast("Produkt konnte nicht erstellt werden", "error");
+        }
+    };
+}
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+function td(text) {
+    const td = document.createElement("td");
+    td.textContent = text ?? "";
+    return td;
+}
+
+function value(id) {
+    return document.getElementById(id)?.value.trim();
+}

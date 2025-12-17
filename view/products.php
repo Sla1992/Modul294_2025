@@ -20,7 +20,8 @@ require_once __DIR__ . "/header.php";
 
     <tbody id="products-table-body">
         <!-- The Products get rendered here dynamically -->
-
+    </tbody>
+    <tbody>
         <tr>
             <td></td>
             <td><input type="text" id="new-sku" placeholder="SKU" style="width: 60px"></td>
@@ -36,6 +37,7 @@ require_once __DIR__ . "/header.php";
     </tbody>
 </table>
 
+<script src="/controller/auth-guard.js"></script>
 <script src="/controller/products-controller.js"></script>
 
 <?php require_once __DIR__ . "/footer.php"; ?>

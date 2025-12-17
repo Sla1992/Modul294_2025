@@ -1,2 +1,2 @@
 console.error("Hey");
-alert("Index Controller loaded");
+console.log("Index Controller Loaded");

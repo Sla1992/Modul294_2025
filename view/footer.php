@@ -5,6 +5,10 @@
     <p>&copy; 2025 Slädju Solutions AG</p>
     <img src="/view/src/cute_panda.png" class="panda" alt="Cute Fox" style="height: 3em;">
 </div>
+<script src="/controller/auth-fetch.js"></script>
+<script src="/controller/toast.js"></script>
+<script src="/controller/validation.js"></script>
+
 
 </body>
 

@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . "/Validator.php";
+
 class TaskController
 {
     // Database connection instance
@@ -50,6 +52,12 @@ class TaskController
     //Create a new product (still don't know what "sku" is)
     public function createProduct(array $data): array
     {
+        // 🔒 Server-side validation
+        $errors = Validator::validateProduct($data, $this->conn);
+        if (!empty($errors)) {
+            return ['errors' => $errors];
+        }
+
         // Prepare a SQL statement to insert a new product
         $sql = "INSERT INTO product (sku, active, id_category, name, image, description, price, stock)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -66,7 +74,17 @@ class TaskController
         $stock = $data['stock'] ?? 0;
 
         // "siisssdii" = s-string, i-integer, d-double (Bind Parameter for my Table)
-        $stmt->bind_param('siisssdi', $sku, $active, $id_category, $name, $image, $description, $price, $stock);
+        $stmt->bind_param(
+            'siisssdi',
+            $sku,
+            $active,
+            $id_category,
+            $name,
+            $image,
+            $description,
+            $price,
+            $stock
+        );
 
         // Execute the statement and check for success
         if ($stmt->execute()) {
@@ -81,8 +99,15 @@ class TaskController
     //Alter a Product chosen by ID
     public function updateProduct(int $id, array $data): array
     {
+        // 🔒 Server-side validation
+        $errors = Validator::validateProduct($data, $this->conn);
+        if (!empty($errors)) {
+            return ['errors' => $errors];
+        }
+
         // Prepare a SQL statement to update a product by ID
-        $sql = "UPDATE product SET sku=?, active=?, id_category=?, name=?, image=?, description=?, price=?, stock=? 
+        $sql = "UPDATE product 
+                SET sku=?, active=?, id_category=?, name=?, image=?, description=?, price=?, stock=? 
                 WHERE product_id=?";
         $stmt = $this->conn->prepare($sql);
 
@@ -96,7 +121,18 @@ class TaskController
         $stock = $data['stock'] ?? 0;
 
         // "siisssdii" = s-string, i-integer, d-double (Bind Parameter for my Table)
-        $stmt->bind_param('siisssdii', $sku, $active, $id_category, $name, $image, $description, $price, $stock, $id);
+        $stmt->bind_param(
+            'siisssdii',
+            $sku,
+            $active,
+            $id_category,
+            $name,
+            $image,
+            $description,
+            $price,
+            $stock,
+            $id
+        );
 
         if ($stmt->execute()) {
             // Return the number of affected rows
@@ -163,11 +199,19 @@ class TaskController
     //Create a new category
     public function createCategory(array $data): array
     {
+        // 🔒 Server-side validation
+        $errors = Validator::validateCategory($data);
+        if (!empty($errors)) {
+            return ['errors' => $errors];
+        }
+
         //Prepare a SQL statement to insert a new category
         $active = $data['active'] ?? 1;
         $name = $data['name'] ?? '';
 
-        $stmt = $this->conn->prepare("INSERT INTO category (active, name) VALUES (?, ?)");
+        $stmt = $this->conn->prepare(
+            "INSERT INTO category (active, name) VALUES (?, ?)"
+        );
         $stmt->bind_param('is', $active, $name);
 
         if ($stmt->execute()) {
@@ -182,11 +226,19 @@ class TaskController
     //Alter a category chosen by ID
     public function updateCategory(int $id, array $data): array
     {
+        // 🔒 Server-side validation
+        $errors = Validator::validateCategory($data);
+        if (!empty($errors)) {
+            return ['errors' => $errors];
+        }
+
         //Prepare a SQL statement to update a category by ID
         $active = $data['active'] ?? 1;
         $name = $data['name'] ?? '';
 
-        $stmt = $this->conn->prepare("UPDATE category SET active=?, name=? WHERE category_id=?");
+        $stmt = $this->conn->prepare(
+            "UPDATE category SET active=?, name=? WHERE category_id=?"
+        );
         $stmt->bind_param('isi', $active, $name, $id);
 
         if ($stmt->execute()) {
@@ -202,7 +254,9 @@ class TaskController
     public function deleteCategory(int $id): array
     {
         //Prepare a SQL statement to delete a category by ID
-        $stmt = $this->conn->prepare("DELETE FROM category WHERE category_id=?");
+        $stmt = $this->conn->prepare(
+            "DELETE FROM category WHERE category_id=?"
+        );
         $stmt->bind_param('i', $id);
 
         if ($stmt->execute()) {

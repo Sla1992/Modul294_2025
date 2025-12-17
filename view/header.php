@@ -18,16 +18,16 @@
                     <a href="/?page=index" class="<?= $page_name === 'index' ? 'selected' : '' ?>">Home</a>
                 </li>
                 <li>
-                    <a href="/?page=products" <?php echo $page_name == "products" ? 'class="selected"' : ""; ?>>Products</a>
+                    <a href="/?page=products" <?php echo $page_name === "products" ? 'class="selected"' : ""; ?>>Products</a>
                 </li>
                 <li>
-                    <a href="/?page=categories" <?php echo $page_name == "categories" ? 'class="selected"' : ""; ?>>Categories</a>
+                    <a href="/?page=categories" <?php echo $page_name === "categories" ? 'class="selected"' : ""; ?>>Categories</a>
                 </li>
                 <li>
-                    <a href="/?page=login" <?php echo $page_name == "login" ? 'class="selected"' : ""; ?>>Login</a>
+                    <a href="/?page=login" <?php echo $page_name === "login" ? 'class="selected"' : ""; ?>>Login</a>
                 </li>
                 <li>
-                    <a href="/?page=logout" <?php echo $page_name == "logout" ? 'class="selected"' : ""; ?>>Log
+                    <a href="/?page=logout" <?php echo $page_name === "logout" ? 'class="selected"' : ""; ?>>Log
                         Out</a>
                 </li>
                 <!-- <li>
