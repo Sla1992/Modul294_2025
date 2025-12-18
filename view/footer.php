@@ -13,6 +13,7 @@
 <script src="/controller/auth-fetch.js"></script>
 
 <!-- Additional scripts for toast notifications and validation -->
+<script src="/controller/modal.js"></script>
 <script src="/controller/toast.js"></script>
 <script src="/controller/validation.js"></script>
 

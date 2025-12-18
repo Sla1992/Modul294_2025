@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Fetch categories to get valid IDs
         const categories = await authFetch("http://localhost/api/public/categories");
         validCategoryIds = categories.map(c => Number(c.category_id));
+        window.validCategoryIds = validCategoryIds;
         
         // Fetch products
         const products = await authFetch("http://localhost/api/public/products");

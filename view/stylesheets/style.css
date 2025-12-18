@@ -199,3 +199,14 @@ font-family: arial, sans-serif;
     border-radius: 8px;
     min-width: 300px;
 }
+
+.modal input {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
