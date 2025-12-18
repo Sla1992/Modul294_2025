@@ -1,21 +1,17 @@
 <?php
-
+// The Validator class for input validation
 class Validator
 {
-    /* =====================================================
-       CATEGORY VALIDATION
-    ===================================================== */
-
+    // Validate category data
     public static function validateCategory(array $data): array
     {
         $errors = [];
-
-        // active: Pflicht, nur 0 oder 1
+        // Validate 'active' field, must be 0 or 1
         if (!isset($data['active']) || !preg_match('/^[01]$/', (string) $data['active'])) {
             $errors[] = "Active must be 0 or 1.";
         }
 
-        // name: Pflicht, nur Buchstaben & Zahlen, max. 20 Zeichen
+        // Validate 'name' field, must be alphanumeric and max 20 chars
         if (
             empty($data['name']) ||
             !preg_match('/^[a-zA-Z0-9]{1,20}$/', $data['name'])
@@ -26,15 +22,12 @@ class Validator
         return $errors;
     }
 
-    /* =====================================================
-       PRODUCT VALIDATION
-    ===================================================== */
-
+    // Validate product data
     public static function validateProduct(array $data, mysqli $conn): array
     {
         $errors = [];
 
-        // SKU: Pflicht, Buchstaben & Zahlen, max. 10 Zeichen
+        // Validate 'sku' field, must be alphanumeric and max 10 chars
         if (
             empty($data['sku']) ||
             !preg_match('/^[a-zA-Z0-9]{1,10}$/', $data['sku'])
@@ -42,7 +35,7 @@ class Validator
             $errors[] = "SKU must contain only letters and numbers (max 10 characters).";
         }
 
-        // Name: Pflicht, Buchstaben & Zahlen, max. 20 Zeichen
+        // Validate 'name' field, must be alphanumeric and max 20 chars
         if (
             empty($data['name']) ||
             !preg_match('/^[a-zA-Z0-9]{1,20}$/', $data['name'])
@@ -50,26 +43,35 @@ class Validator
             $errors[] = "Name must contain only letters and numbers (max 20 characters).";
         }
 
-        // id_category: Pflicht, Integer, muss existieren
+        //  Validate 'id_category' field, must exist in 'category' table
         if (!isset($data['id_category']) || !ctype_digit((string) $data['id_category'])) {
             $errors[] = "Category ID must be a valid integer.";
         } else {
+
+            // Prepare and execute query to check if category exists
             $stmt = $conn->prepare("SELECT category_id FROM category WHERE category_id = ?");
+
+            // Bind parameter and execute
             $stmt->bind_param("i", $data['id_category']);
+
+            // Execute the statement
             $stmt->execute();
+
+            // Store the result
             $stmt->store_result();
 
+            // Check if category exists
             if ($stmt->num_rows === 0) {
                 $errors[] = "Category does not exist.";
             }
         }
 
-        // active: Pflicht, nur 0 oder 1
+        // Validate 'active' field, must be 0 or 1
         if (!isset($data['active']) || !preg_match('/^[01]$/', (string) $data['active'])) {
             $errors[] = "Active must be 0 or 1.";
         }
 
-        // price: Pflicht, Zahl >= 0, Kommazahlen erlaubt
+        // Validate 'price' field, must be a positive number
         if (
             !isset($data['price']) ||
             !is_numeric($data['price']) ||
@@ -78,7 +80,7 @@ class Validator
             $errors[] = "Price must be a positive number.";
         }
 
-        // stock: Pflicht, Ganzzahl >= 0
+        // Validate 'stock' field, must be a positive integer
         if (
             !isset($data['stock']) ||
             !ctype_digit((string) $data['stock'])

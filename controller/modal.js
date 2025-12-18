@@ -1,7 +1,13 @@
-function openModal(title, contentHtml, onSave) {
+// Simple modal implementation
+function openModal(title, contentHtml, onSave) { 
+
+    // Create modal elements
     const overlay = document.createElement("div");
+
+    // Set class for styling
     overlay.className = "modal-overlay";
 
+    // Set inner HTML
     overlay.innerHTML = `
         <div class="modal">
             <h3>${title}</h3>
@@ -13,8 +19,10 @@ function openModal(title, contentHtml, onSave) {
         </div>
     `;
 
+    // Append to body
     document.body.appendChild(overlay);
 
+    // Set up button handlers
     overlay.querySelector(".cancel-btn").onclick = () => overlay.remove();
     overlay.querySelector(".save-btn").onclick = () => {
         onSave();

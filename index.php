@@ -1,14 +1,17 @@
 <?php
 // Get requested page from URL, default to 'index'
 $page = $_GET['page'] ?? 'index';
+
 // Define valid routes
 $routes = [
+    //  Page identifier => View file name
     'index' => 'index',
     'products' => 'products',
     'categories' => 'categories',
     'login' => 'login',
     'logout' => 'logout',
 ];
+
 // Check if route exists
 if (!isset($routes[$page])) {
     http_response_code(404);
